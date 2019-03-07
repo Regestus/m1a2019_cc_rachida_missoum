@@ -14,14 +14,12 @@ public final class Stage implements contrat.Stage {
     private Statut statut;
 
     public Stage(String identifiant, String titre, Competence competence, Niveau niveau,
-                 contrat.Entreprise entreprise, Statut statut, contrat.Etudiant etudiant) {
+                 contrat.Entreprise entreprise) {
         this.identifiant = identifiant;
         this.titre = titre;
         this.competence = competence;
         this.niveau = niveau;
         this.entreprise = entreprise;
-        this.statut = statut;
-        this.etudiant = etudiant;
         if(statut==null)
         {
             etudiant=null;

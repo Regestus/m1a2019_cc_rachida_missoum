@@ -13,14 +13,11 @@ public final class Etudiant implements contrat.Etudiant {
     private final List<Competence> competences;
     private contrat.Enseignant tuteur;
 
-
-    public Etudiant(String nom, Set<contrat.Stage> s, List<Competence> c, contrat.Enseignant t) {
+    public Etudiant(String nom) {
         this.nom = nom;
-        this.stages = s;
-        this.competences = c;
-        this.tuteur=t;
+        this.stages = new HashSet<>();
+        this.competences = new ArrayList<>();
     }
-
 
     @Override
     public String getNom() {
@@ -28,7 +25,7 @@ public final class Etudiant implements contrat.Etudiant {
     }
 
     @Override
-    public Set<Stage> getStages() {
+    public Set<contrat.Stage> getStages() {
         return this.stages;
     }
 

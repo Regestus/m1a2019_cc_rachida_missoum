@@ -2,6 +2,7 @@ package model;
 
 import contrat.Etudiant;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public final class Enseignant implements contrat.Enseignant {
@@ -9,9 +10,9 @@ public final class Enseignant implements contrat.Enseignant {
     private final String nom;
     private final Set<contrat.Etudiant> etudiants;
 
-    public Enseignant(String nom, Set<contrat.Etudiant> e) {
+    public Enseignant(String nom) {
         this.nom = nom;
-        this.etudiants = e;
+        this.etudiants = new HashSet<>();
     }
 
 

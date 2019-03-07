@@ -1,10 +1,15 @@
 package traitement;
 
+import contrat.*;
+import model.Entreprise;
+import model.Etudiant;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Permet de charger les fichiers contenant les donnees des etudiants et des stages.
@@ -26,14 +31,13 @@ public final class StagesIO {
     private Path stagesFilePath;
 
 
-    public StagesIO(Path etuFilePath, Path stagesFilePath, Map<String, contrat.Stage> stagesMap, Map<String,
-            contrat.Etudiant> etusMap, Map<Integer, contrat.Classe> classesMap, Map<String, contrat.Enseignant> enseignantsMap) {
+    public StagesIO(Path etuFilePath, Path stagesFilePath) {
         this.etuFilePath = etuFilePath;
         this.stagesFilePath = stagesFilePath;
-        this.stagesMap = stagesMap;
-        this.etusMap = etusMap;
-        this.classesMap = classesMap;
-        this.enseignantsMap = enseignantsMap;
+        this.stagesMap = new HashMap<>();
+        this.etusMap = new HashMap<>();
+        this.classesMap =new HashMap<>();
+        this.enseignantsMap = new HashMap<>();
     }
 
     /**
@@ -41,6 +45,40 @@ public final class StagesIO {
      * @throws IOException
      */
     public void chargerDonnees() throws IOException {
+        FileReader fr = new FileReader(String.valueOf(etuFilePath));
+        BufferedReader br = new BufferedReader(fr);
+        String s = br.readLine();
+        Scanner sc = new Scanner(new File(String.valueOf(etuFilePath)));
+        sc.useDelimiter("#");
+
+        FileReader frs = new FileReader(String.valueOf(stagesFilePath));
+        BufferedReader brs = new BufferedReader(frs);
+        String z = brs.readLine();
+        Scanner scan = new Scanner(new File(String.valueOf(stagesFilePath)));
+        sc.useDelimiter("#");
+
+        while(scan.hasNext()){
+            String id = scan.nextLine();
+            String titre = scan.nextLine();
+            String competence = scan.nextLine();
+            String niveau = scan.nextLine();
+            String entreprise = scan.nextLine();
+            String statut = scan.nextLine();
+            stagesMap.put(id, new model.Stage(id, titre, Competence.valueOf(competence), Niveau.valueOf(niveau), new Entreprise(entreprise)));
+        }
+
+        while(sc.hasNext()){
+            String nom = sc.nextLine();
+            String classe = sc.nextLine();
+            String filiere = sc.nextLine();
+            String annee = sc.nextLine();
+            String competence = sc.nextLine();
+            String stage = sc.nextLine();
+            String tuteur = sc.nextLine();
+
+            etusMap.put(nom, new Etudiant(nom));
+        }
+
 
     }
 
@@ -57,8 +95,9 @@ public final class StagesIO {
      * @return la liste des enseignants
      */
     public List<contrat.Enseignant> getEnseignants(){
-        return null;
-    } // Est-ce qu'on caste ?  et  SortedSet
+        List<contrat.Enseignant> liste = new ArrayList<Enseignant>(SortedMap.values());
+        return liste.sort(contrat.Etudiant);
+    }
 
     public Set<contrat.Entreprise> getEntreprises(){
         return null;

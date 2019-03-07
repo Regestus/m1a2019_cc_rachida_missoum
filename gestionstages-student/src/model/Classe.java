@@ -4,6 +4,7 @@ import contrat.Etudiant;
 import contrat.Filiere;
 import contrat.Niveau;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public final class Classe implements contrat.Classe {
@@ -13,11 +14,11 @@ public final class Classe implements contrat.Classe {
     private final String annee;
     private final Set<contrat.Etudiant> etudiants;
 
-    public Classe(Niveau niveau, Filiere filiere, String annee, Set<contrat.Etudiant> e) {
+    public Classe(Niveau niveau, Filiere filiere, String annee) {
         this.niveau = niveau;
         this.filiere = filiere;
         this.annee = annee;
-        this.etudiants = e;
+        this.etudiants = new HashSet<>();
     }
 
     @Override

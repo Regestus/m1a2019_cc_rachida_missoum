@@ -1,26 +1,27 @@
 package model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public final class Entreprise implements contrat.Entreprise {
 
     private final String nom;
-    private final Set<Stage> stages;
+    private final Set<contrat.Stage> stages;
 
     public Entreprise(String nom) {
-        this.nom = null;
-        this.stages = null;
+        this.nom = nom;
+        this.stages = new HashSet<contrat.Stage>();
     }
 
 
     @Override
     public String getNom() {
-        return null;
+        return this.nom;
     }
 
     @Override
-    public Set<Stage> getStages() {
-        return null;
+    public Set<contrat.Stage> getStages() {
+        return this.stages;
     }
 
     @Override
