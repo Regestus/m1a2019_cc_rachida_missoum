@@ -25,15 +25,7 @@ public final class StagesRequetes {
      * @return l'ensemble de ses étudiants
      */
     public Set<contrat.Etudiant> etudiantsDeLEnseignant(String nom) {
-        Set<contrat.Etudiant> etudiants = new HashSet<contrat.Etudiant>();
-        Iterator it = etudiants.iterator();
-        while(it.hasNext())
-        {
-            if()
-            {
-
-            }
-        }
+        return null;
 
     }
 

@@ -1,15 +1,13 @@
 package traitement;
 
 import contrat.*;
-import model.Entreprise;
-import model.Etudiant;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Permet de charger les fichiers contenant les donnees des etudiants et des stages.
@@ -36,7 +34,7 @@ public final class StagesIO {
         this.stagesFilePath = stagesFilePath;
         this.stagesMap = new HashMap<>();
         this.etusMap = new HashMap<>();
-        this.classesMap =new HashMap<>();
+        this.classesMap = new HashMap<>();
         this.enseignantsMap = new HashMap<>();
     }
 
@@ -45,49 +43,99 @@ public final class StagesIO {
      * @throws IOException
      */
     public void chargerDonnees() throws IOException {
-        FileReader fr = new FileReader(String.valueOf(etuFilePath));
+       /* FileReader fr = new FileReader(String.valueOf(stagesFilePath));
         BufferedReader br = new BufferedReader(fr);
-        String s = br.readLine();
-        Scanner sc = new Scanner(new File(String.valueOf(etuFilePath)));
-        sc.useDelimiter("#");
+        br.readLine();
 
-        FileReader frs = new FileReader(String.valueOf(stagesFilePath));
-        BufferedReader brs = new BufferedReader(frs);
-        String z = brs.readLine();
-        Scanner scan = new Scanner(new File(String.valueOf(stagesFilePath)));
-        sc.useDelimiter("#");
+        Scanner read = new Scanner (new File(String.valueOf(stagesFilePath)));
+        read.useDelimiter("#");
+        List<contrat.Entreprise> ent = new ArrayList() ;
+        while (read.hasNext()){
+            String id = read.next();
+            String titre = read.next();
+            String competence = read.next();
+            String niveau = read.next();
+            String entreprise = read.next();
+            //entreprise recherche
 
-        while(scan.hasNext()){
-            String id = scan.nextLine();
-            String titre = scan.nextLine();
-            String competence = scan.nextLine();
-            String niveau = scan.nextLine();
-            String entreprise = scan.nextLine();
-            String statut = scan.nextLine();
-            stagesMap.put(id, new model.Stage(id, titre, Competence.valueOf(competence), Niveau.valueOf(niveau), new Entreprise(entreprise)));
+            model.Entreprise e = new model.Entreprise(entreprise);
+            model.Stage s = new model.Stage(id, titre, Competence.valueOf(competence),
+                    Niveau.valueOf(niveau), e);
+            //s.setStatut(Statut.valueOf(statut));
+            e.addStage(s);
+
+            stagesMap.put(id, s);
         }
 
-        while(sc.hasNext()){
-            String nom = sc.nextLine();
-            String classe = sc.nextLine();
-            String filiere = sc.nextLine();
-            String annee = sc.nextLine();
-            String competence = sc.nextLine();
-            String stage = sc.nextLine();
-            String tuteur = sc.nextLine();
+        fr = new FileReader(String.valueOf(etuFilePath));
+        br = new BufferedReader(fr);
+        br.readLine();
 
-            etusMap.put(nom, new Etudiant(nom));
-        }
+        read = new Scanner (new File(String.valueOf(etuFilePath)));
+        read.useDelimiter("#");
+
+        while (read.hasNext()){
+            String name = read.next();
+            String niveau = read.next();
+            String filiere = read.next();
+            String annee = read.next();
+            String competence = read.next();
+            String stage = read.next();
+            String tuteur =read.next();
+            String tut[] = tuteur.split(" ");
+
+            Etudiant e = new model.Etudiant(name);
+
+            e.addStage(stagesMap.get(stage));
+            etusMap.put(name, e);
+
+            Enseignant en = new model.Enseignant(tut[1]);
+            e.setTuteur(en);
+            en.addEtudiant(e);
+            enseignantsMap.put(name, en);
+
+            String competences[] = competence.split(",");
+            for (int i=0; i<=competences.length; i++)
+            {
+                e.addCompetence(Competence.valueOf(competences[i]));
+            }
+            //classe recherche
+            classesMap.put(classesMap.hashCode(),
+                    new model.Classe(Niveau.valueOf(niveau), Filiere.valueOf(filiere), annee));
+        }*/
 
 
+        Stream etufile = Files.lines(etuFilePath);
+        Stream stagefile = Files.lines(stagesFilePath);
+        stagefile.forEach(x -> {
+            String[] tab = x.toString().split("#");
+            this.stagesMap.put(tab[0], new model.Stage(tab[0],tab[1],Competence.valueOf(tab[2]),Niveau.valueOf(tab[3]),new model.Entreprise(tab[4])));
+        });
+        etufile.forEach(x -> {
+            String[] tab = x.toString().split("#");
+            this.etusMap.put(tab[0],new model.Etudiant(tab[0]));
+            this.classesMap.put(Niveau.valueOf(tab[1]).getNiveau(), new model.Classe(Niveau.valueOf(tab[1]), Filiere.valueOf(tab[2]), tab[3]));
+            this.enseignantsMap.put(tab[6], new model.Enseignant(tab[6]));
+            this.classesMap.get(Niveau.valueOf(tab[1]).getNiveau()).addEtudiants(etusMap.get(tab[0]));
+            this.enseignantsMap.get(tab[6]).addEtudiant(this.etusMap.get(tab[0]));
+            if(this.stagesMap.get(tab[5]) != null)
+            {
+                this.etusMap.get(tab[0]).addStage(this.stagesMap.get(tab[5]));
+            }
+
+        });
     }
 
     /**
      * Renvoie la liste des classes, triées selon le niveau (L3, M1, M2)
      * @return la liste des classes
      */
-    public List<contrat.Classe> getClasses() {
-        return null;
+    public List<contrat.Classe> getClasses(){
+        List<contrat.Classe> classes = this.classesMap.values()
+                .stream()
+                .sorted(Comparator.comparing(contrat.Classe :: getNiveau))
+                .collect(Collectors.toList());
+        return classes;
     }
 
     /**
@@ -95,8 +143,11 @@ public final class StagesIO {
      * @return la liste des enseignants
      */
     public List<contrat.Enseignant> getEnseignants(){
-        List<contrat.Enseignant> liste = new ArrayList<Enseignant>(SortedMap.values());
-        return liste.sort(contrat.Etudiant);
+        List<contrat.Enseignant> enseignants = this.enseignantsMap.values()
+                .stream()
+                .sorted(Comparator.comparing(contrat.Enseignant :: getNom))
+                .collect(Collectors.toList());
+        return enseignants;
     }
 
     public Set<contrat.Entreprise> getEntreprises(){
@@ -108,7 +159,8 @@ public final class StagesIO {
      * @return la liste des étudiants
      */
     public List<contrat.Etudiant> getEtudiants(){
-        return null;
+        List<contrat.Etudiant> etudiants = this.etusMap.values().stream().sorted(Comparator.comparing(contrat.Etudiant::getNom)).collect(Collectors.toList());
+        return etudiants;
     }
 
     /**
@@ -116,7 +168,8 @@ public final class StagesIO {
      * @return la liste des stages
      */
     public List<contrat.Stage> getStages(){
-        return null;
+        List<contrat.Stage> stages = this.stagesMap.values().stream().sorted(Comparator.comparing(contrat.Stage::getNiveau)).collect(Collectors.toList());
+        return stages;
     }
 
 }
