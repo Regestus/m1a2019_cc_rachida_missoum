@@ -114,15 +114,19 @@ public final class StagesIO {
         etufile.forEach(x -> {
             String[] tab = x.toString().split("#");
             this.etusMap.put(tab[0],new model.Etudiant(tab[0]));
+            String[] tab2 = tab[4].toString().split(",");
+            for (String c:tab2 ) {
+                this.etusMap.get(tab[0]).addCompetence(Competence.valueOf(c));
+            }
             this.classesMap.put(Niveau.valueOf(tab[1]).getNiveau(), new model.Classe(Niveau.valueOf(tab[1]), Filiere.valueOf(tab[2]), tab[3]));
             this.enseignantsMap.put(tab[6], new model.Enseignant(tab[6]));
+            this.etusMap.get(tab[0]).setTuteur(this.enseignantsMap.get(tab[6]));
             this.classesMap.get(Niveau.valueOf(tab[1]).getNiveau()).addEtudiants(etusMap.get(tab[0]));
             this.enseignantsMap.get(tab[6]).addEtudiant(this.etusMap.get(tab[0]));
             if(this.stagesMap.get(tab[5]) != null)
             {
                 this.etusMap.get(tab[0]).addStage(this.stagesMap.get(tab[5]));
             }
-
         });
     }
 
@@ -131,10 +135,7 @@ public final class StagesIO {
      * @return la liste des classes
      */
     public List<contrat.Classe> getClasses(){
-        List<contrat.Classe> classes = this.classesMap.values()
-                .stream()
-                .sorted(Comparator.comparing(contrat.Classe :: getNiveau))
-                .collect(Collectors.toList());
+        List<contrat.Classe> classes = this.classesMap.values().stream().sorted(Comparator.comparing(contrat.Classe :: getNiveau)).collect(Collectors.toList());
         return classes;
     }
 
@@ -143,19 +144,17 @@ public final class StagesIO {
      * @return la liste des enseignants
      */
     public List<contrat.Enseignant> getEnseignants(){
-        List<contrat.Enseignant> enseignants = this.enseignantsMap.values()
-                .stream()
-                .sorted(Comparator.comparing(contrat.Enseignant :: getNom))
-                .collect(Collectors.toList());
+        List<contrat.Enseignant> enseignants = this.enseignantsMap.values().stream().sorted(Comparator.comparing(contrat.Enseignant :: getNom)).collect(Collectors.toList());
         return enseignants;
     }
 
     public Set<contrat.Entreprise> getEntreprises(){
-        return null;
+            return this.getStages().stream().map(Stage::getEntreprise).collect(Collectors.toSet());
     }
 
     /**
      * Renvoie la liste des étudiants, triés selon leur nom.
+     *
      * @return la liste des étudiants
      */
     public List<contrat.Etudiant> getEtudiants(){
