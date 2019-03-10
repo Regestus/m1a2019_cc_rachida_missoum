@@ -1,7 +1,5 @@
 package contrat;
 
-import model.Etudiant;
-
 import java.util.Set;
 
 /**

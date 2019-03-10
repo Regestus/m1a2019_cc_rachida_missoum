@@ -13,6 +13,19 @@ public final class Stage implements contrat.Stage {
     private contrat.Etudiant etudiant;
     private Statut statut;
 
+    @Override
+    public String toString() {
+        return "Stage{" +
+                "identifiant='" + identifiant + '\'' +
+                ", titre='" + titre + '\'' +
+                ", competence=" + competence +
+                ", niveau=" + niveau +
+                ", entreprise=" + entreprise +
+                ", etudiant=" + etudiant +
+                ", statut=" + statut +
+                '}';
+    }
+
     public Stage(String identifiant, String titre, Competence competence, Niveau niveau,
                  contrat.Entreprise entreprise) {
         this.identifiant = identifiant;

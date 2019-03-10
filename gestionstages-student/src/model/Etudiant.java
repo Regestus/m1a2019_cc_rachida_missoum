@@ -45,6 +45,16 @@ public final class Etudiant implements contrat.Etudiant {
     }
 
     @Override
+    public String toString() {
+        return "Etudiant{" +
+                "nom='" + nom + '\'' +
+                ", stages=" + stages +
+                ", competences=" + competences +
+                ", tuteur=" + tuteur +
+                '}';
+    }
+
+    @Override
     public Enseignant getTuteur() {
         return this.tuteur;
     }

@@ -8,6 +8,14 @@ public final class Entreprise implements contrat.Entreprise {
     private final String nom;
     private final Set<contrat.Stage> stages;
 
+    @Override
+    public String toString() {
+        return "Entreprise{" +
+                "nom='" + nom + '\'' +
+                ", stages=" + stages +
+                '}';
+    }
+
     public Entreprise(String nom) {
         this.nom = nom;
         this.stages = new HashSet<contrat.Stage>();
